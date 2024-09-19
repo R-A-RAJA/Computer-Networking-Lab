@@ -1,0 +1,65 @@
+------WebKitFormBoundaryy8mk05aDBbGETnrX
+Content-Disposition: form-data; name="file"; filename="ftp_server.txt"
+Content-Type: text/plain
+
+import java.io.*;
+import org.apache.commons.net.ftp.FTPServerFactory;
+import org.apache.commons.net.ftp.FTPUser;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileAuthorizer;
+import org.apache.commons.net.ftp.FTPFileRequestEvent;
+import org.apache.commons.net.ftp.FTPFileRequestListener;
+
+public class FTPServer {
+    public static void main(String[] args) {
+        FTPServerFactory serverFactory = new FTPServerFactory();
+        serverFactory.setAuthorizer(new MyAuthorizer());
+        serverFactory.setUserManager(new MyUserManager());
+        serverFactory.setServerControlPort(21);
+
+        try {
+            serverFactory.startServer();
+            System.out.println("FTP Server started. Listening on port 21.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static class MyAuthorizer implements FTPFileAuthorizer {
+        @Override
+        public boolean authorize(FTPFileRequestEvent event) {
+            FTPFile file = event.getFTPFile();
+            String user = event.getFTPUserName();
+            // Implement your authorization logic here
+            return true;
+        }
+    }
+
+    private static class MyUserManager implements FTPUser {
+        private String username;
+        private String password;
+        private String homeDir;
+
+        public MyUserManager() {
+            this.username = "ftpuser";
+            this.password = "password";
+            this.homeDir = "/home/ftpuser";
+        }
+
+        @Override
+        public String getName() {
+            return username;
+        }
+
+        @Override
+        public String getPassword() {
+            return password;
+        }
+
+        @Override
+        public String getHomeDirectory() {
+            return homeDir;
+        }
+    }
+}
+------WebKitFormBoundaryy8mk05aDBbGETnrX--
